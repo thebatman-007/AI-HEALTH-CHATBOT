@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>AI Health Chatbot</title>
+    <style>
+    <script src="script.js"></script>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f6ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 400px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: #4a6cf7;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .chat-box {
+            padding: 15px;
+            height: 350px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .user {
+            text-align: right;
+            color: #333;
+        }
+
+        .bot {
+            text-align: left;
+            color: #4a6cf7;
+        }
+
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        .chat-input button {
+            padding: 10px 15px;
+            border: none;
+            background: #4a6cf7;
+            color: white;
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background: #3a55d9;
+        }
+
+        .disclaimer {
+            font-size: 11px;
+            color: #777;
+            text-align: center;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">
+    <h1>AI Health Chatbot</h1>
+    <p>Your virtual health assistant</p>
+
+    <div class="health-image">
+        <img src="health.png" alt="Health Icon">
+    </div>
+</div>
+
+    <div class="chat-box" id="chatBox">
+        <div class="message bot">
+            Hello! I am an AI health assistant. Ask me general health questions.
+        </div>
+    </div>
+
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your health question...">
+        <button onclick="sendMessage()">Send</button>
+        <button id="micBtn">🎤</button>
+</button>
+
+    </div>
+
+    <div class="disclaimer">
+        ⚠️ Not a substitute for professional medical advice
+    </div>
+</div>
+
+<script>
+    const apiKey = "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"; // 🔑 Insert your API key here
+
+    async function sendMessage() {
+        const input = document.getElementById("userInput");
+        const message = input.value.trim();
+        if (!message) return;
+
+        appendMessage(message, "user");
+        input.value = "";
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + apiKey
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are a helpful AI health assistant. Provide general health information only and avoid diagnosis."
+                    },
+                    {
+                        role: "user",
+                        content: message
+                    }
+                ],
+                temperature: 0.5
+            })
+        });
+
+        const data = await response.json();
+        const botReply = data.choices[0].message.content;
+        appendMessage(botReply, "bot");
+    }
+
+    function appendMessage(text, sender) {
+        const chatBox = document.getElementById("chatBox");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${sender}`;
+        messageDiv.innerText = text;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+<div class="creator-credit">
+    Created by :- <strong>Harshvardhan Singh Raghuvanshi</strong>
+</div>
+
+</body>
+</html>
